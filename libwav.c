@@ -234,6 +234,11 @@ wav_read (wav_file *wavfile, const char *filename)
 		return WAV_FILE_NOT_OPENED;
 	}
 	
+	// Get file size here:
+	fseek(f, 0, SEEK_END);
+	long wav_filesize = ftell(f);
+	fseek(f, 0, SEEK_SET);
+
 	// Check if its a valid file:
 	wav_chunk chunk;
 	
@@ -266,6 +271,10 @@ wav_read (wav_file *wavfile, const char *filename)
 			default:
 				// NOTE: Unknown chunk!
 				fseek (f, chunk.chunk_size, SEEK_CUR);
+				// Check 
+				long cur_filepos = ftell(f);
+				if (cur_filepos > wav_filesize || chunk.chunk_size == 0)
+					return WAV_ERROR;
 				break;
 		}
 	}
